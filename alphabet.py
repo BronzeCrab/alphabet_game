@@ -172,7 +172,7 @@ class AlphabetGame(tk.Toplevel):
                 change_pos == 0)):
             self.init_default_letters(
                 initial_letter_top, initial_letter_bottom)
-            # выполняется после оторбажения двух букв:
+            # выполняется после отображения двух букв:
             self.canvas.after(
                 self.pause, lambda: self.change_letters())
 
@@ -216,7 +216,10 @@ class AlphabetGame(tk.Toplevel):
                 anchor=tk.W, font=(FONT[0], DEFAULT_SIZE),
                 text=initial_letter_bottom)
 
-            self.canvas.after(self.pause, lambda: self.change_letters_pos())
+            self.canvas.after(
+                self.pause,
+                lambda: self.change_letters_pos(),
+            )
 
         elif all((change_font_size == 1,
                   random_order == 1,
@@ -259,6 +262,7 @@ class AlphabetGame(tk.Toplevel):
                   random_order == 0,
                   change_color == 0,
                   change_pos == 1)):
+            # косяк
             random_size = self.init_random_size_letters(
                 initial_letter_top, initial_letter_bottom)
             self.canvas.after(
@@ -320,12 +324,9 @@ class AlphabetGame(tk.Toplevel):
             text=initial_letter_bottom)
         return random_size
 
-    def change_ord(self, cur_ord=None):
-        if not cur_ord:
-            cur_letter_ord = ord(
-                self.canvas.itemcget(self.top_letter_id, "text"))
-        else:
-            cur_letter_ord = cur_ord
+    def change_ord(self):
+        cur_letter_ord = ord(
+            self.canvas.itemcget(self.top_letter_id, "text"))
         if self.lang == "русский":
             # буква Я, начинаем сначала
             if cur_letter_ord == 1071:
@@ -336,7 +337,6 @@ class AlphabetGame(tk.Toplevel):
             # после Ё возврат к Ж
             elif cur_letter_ord == 1025:
                 cur_letter_ord = 1045
-            next_ord = cur_letter_ord + 1
         else:
             if cur_letter_ord == 90:
                 cur_letter_ord = 64
@@ -359,9 +359,8 @@ class AlphabetGame(tk.Toplevel):
         self.canvas.itemconfigure(
             self.top_letter_id, text=chr(self.change_ord()))
         self.canvas.itemconfigure(
-            self.bottom_letter_id, text=self.get_next_bottom_letter())
-
-        self.after(self.pause, lambda: self.change_letters())
+            self.bottom_letter_id, text=self.get_next_bottom_letter(),
+        )
 
     def change_sizes(self, prev_size):
         random_size = self.gen_rand_size()
@@ -369,14 +368,11 @@ class AlphabetGame(tk.Toplevel):
             self.top_letter_id, font=(FONT[0], random_size))
         self.canvas.itemconfigure(
             self.bottom_letter_id, font=(FONT[0], random_size))
-        # раньше был зазор , теперь нужно понять как сместить вторую
-        # вторую строку. Убираю старый зазор и ставлю новый
 
         self.canvas.move(
             self.bottom_letter_id, 0, 1.5 * (random_size - prev_size))
 
-        self.after(
-            self.pause, lambda: self.change_sizes(random_size))
+        return random_size
 
     def gen_random_ord(self):
         """return random rus ord А-Я or eng"""
@@ -399,9 +395,15 @@ class AlphabetGame(tk.Toplevel):
 
     def change_letters_colors(self):
         self.canvas.itemconfigure(
-            self.top_letter_id, fill=self.gen_random_color())
+            self.top_letter_id,
+            text=chr(self.change_ord()),
+            fill=self.gen_random_color(),
+        )
         self.canvas.itemconfigure(
-            self.bottom_letter_id, fill=self.gen_random_color())
+            self.bottom_letter_id,
+            text=self.get_next_bottom_letter(),
+            fill=self.gen_random_color(),
+        )
         self.after(self.pause, lambda: self.change_letters_colors())
 
     def gen_random_coords(self):
@@ -409,14 +411,21 @@ class AlphabetGame(tk.Toplevel):
         rand_y = randrange(100, 400)
         return rand_x, rand_y
 
-    def change_letters_pos(self, prev_size):
+    def change_letters_pos(self, changed_sizes=False):
+        self.default_change_letters()
         rand_x, rand_y = self.gen_random_coords()
         self.canvas.coords(self.top_letter_id, (rand_x, rand_y))
-        self.canvas.coords(
-            self.bottom_letter_id,
-            (rand_x, rand_y + prev_size + prev_size * 0.5))
+        if changed_sizes:
+            self.canvas.move(
+                self.bottom_letter_id, rand_x, 0)
+        else:
+            self.canvas.coords(
+                self.bottom_letter_id,
+                (rand_x, rand_y + DEFAULT_SIZE + DEFAULT_SIZE * 0.5))
 
-        self.after(self.pause, lambda: self.change_letters_pos(prev_size))
+        self.after(
+            self.pause,
+            lambda: self.change_letters_pos(changed_sizes=changed_sizes))
 
     def change_letter_size_order(self, prev_size):
         self.change_sizes(prev_size)
@@ -437,11 +446,15 @@ class AlphabetGame(tk.Toplevel):
 
     def change_letter_size_pos(self, prev_size):
         self.change_sizes(prev_size)
-        self.change_letters_pos(prev_size)
+        self.change_letters_pos(changed_sizes=True)
 
     def change_letters_and_sizes(self, prev_size):
         self.change_letters()
-        self.change_sizes(prev_size)
+        random_size = self.change_sizes(prev_size)
+        self.after(
+            self.pause,
+            lambda: self.change_letters_and_sizes(random_size),
+        )
 
     def change_letter_size_color(self, prev_size):
         self.change_letters_and_sizes(prev_size)
