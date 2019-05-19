@@ -180,10 +180,10 @@ class AlphabetGame(tk.Toplevel):
                   random_order == 0,
                   change_color == 0,
                   change_pos == 0)):
-            random_size = self.init_random_size_letters(
+            self.init_random_size_letters(
                 initial_letter_top, initial_letter_bottom)
             self.canvas.after(
-                self.pause, lambda: self.change_letters_and_sizes(random_size))
+                self.pause, lambda: self.change_letter_size())
 
         elif all((change_font_size == 0,
                   random_order == 1,
@@ -215,21 +215,19 @@ class AlphabetGame(tk.Toplevel):
                 rand_x, rand_y + DEFAULT_SIZE + DEFAULT_SIZE * 0.5,
                 anchor=tk.W, font=(FONT[0], DEFAULT_SIZE),
                 text=initial_letter_bottom)
-
             self.canvas.after(
                 self.pause,
-                lambda: self.change_letters_pos(),
+                lambda: self.change_letter_pos(),
             )
 
         elif all((change_font_size == 1,
                   random_order == 1,
                   change_color == 0,
                   change_pos == 0)):
-            random_size = self.init_random_size_letters(
+            self.init_random_size_letters(
                 initial_letter_top, initial_letter_bottom)
             self.canvas.after(
-                self.pause, lambda: self.change_letter_size_order(
-                    random_size))
+                self.pause, lambda: self.change_letter_size_order())
 
         elif all((change_font_size == 0,
                   random_order == 1,
@@ -262,53 +260,53 @@ class AlphabetGame(tk.Toplevel):
                   random_order == 0,
                   change_color == 0,
                   change_pos == 1)):
-            # косяк
-            random_size = self.init_random_size_letters(
+            self.init_random_size_letters(
                 initial_letter_top, initial_letter_bottom)
             self.canvas.after(
-                self.pause, lambda: self.change_letter_size_pos(random_size))
+                self.pause, lambda: self.change_letter_size_pos())
 
         elif all((change_font_size == 1,
                   random_order == 0,
                   change_color == 1,
                   change_pos == 0)):
-            random_size = self.init_random_size_letters(
+            self.init_random_size_letters(
                 initial_letter_top, initial_letter_bottom)
             self.canvas.after(
-                self.pause, lambda: self.change_letter_size_color(random_size))
+                self.pause, lambda: self.change_letter_size_color())
 
         elif all((change_font_size == 1,
                   random_order == 0,
                   change_color == 1,
                   change_pos == 1)):
-            random_size = self.init_random_size_letters(
+            self.init_random_size_letters(
                 initial_letter_top, initial_letter_bottom)
             self.canvas.after(
                 self.pause,
-                lambda: self.change_letter_size_pos_color(random_size))
+                lambda: self.change_letter_size_pos_color())
 
         elif all((change_font_size == 1,
                   random_order == 1,
                   change_color == 0,
                   change_pos == 1)):
-            random_size = self.init_random_size_letters(
+            self.init_random_size_letters(
                 initial_letter_top, initial_letter_bottom)
             self.canvas.after(
                 self.pause,
-                lambda: self.change_letter_size_pos_order(random_size))
+                lambda: self.change_letter_size_pos_order())
         else:
-            random_size = self.init_random_size_letters(
+            print('here')
+            self.init_random_size_letters(
                 initial_letter_top, initial_letter_bottom)
             self.canvas.after(
                 self.pause,
-                lambda: self.change_all(random_size))
+                lambda: self.change_all())
 
     def init_default_letters(self, initial_letter_top, initial_letter_bottom):
         self.top_letter_id = self.canvas.create_text(
             400, 200, anchor=tk.W, font=(
                 FONT[0], DEFAULT_SIZE), text=initial_letter_top)
         self.bottom_letter_id = self.canvas.create_text(
-            400, 260, anchor=tk.W, font=(
+            400, 200 + DEFAULT_SIZE * 1.5, anchor=tk.W, font=(
                 FONT[0], DEFAULT_SIZE), text=initial_letter_bottom)
 
     def init_random_size_letters(self,
@@ -318,11 +316,10 @@ class AlphabetGame(tk.Toplevel):
             400, 200, anchor=tk.W, font=(
                 FONT[0], random_size), text=initial_letter_top)
         self.bottom_letter_id = self.canvas.create_text(
-            400, 200 + random_size + random_size * 0.5,
+            400, 200 + random_size * 1.5,
             anchor=tk.W,
             font=(FONT[0], random_size),
             text=initial_letter_bottom)
-        return random_size
 
     def change_ord(self):
         cur_letter_ord = ord(
@@ -361,18 +358,19 @@ class AlphabetGame(tk.Toplevel):
         self.canvas.itemconfigure(
             self.bottom_letter_id, text=self.get_next_bottom_letter(),
         )
+        self.after(self.pause, lambda: self.change_letters())
 
-    def change_sizes(self, prev_size):
+    def change_sizes(self):
         random_size = self.gen_rand_size()
         self.canvas.itemconfigure(
             self.top_letter_id, font=(FONT[0], random_size))
+        current_size = int(self.canvas.itemconfig(
+            self.bottom_letter_id)['font'][-1].split()[1])
         self.canvas.itemconfigure(
             self.bottom_letter_id, font=(FONT[0], random_size))
-
         self.canvas.move(
-            self.bottom_letter_id, 0, 1.5 * (random_size - prev_size))
-
-        return random_size
+            self.bottom_letter_id, 0, 1.5 * (random_size - current_size))
+        self.after(self.pause, lambda: self.change_sizes())
 
     def gen_random_ord(self):
         """return random rus ord А-Я or eng"""
@@ -393,88 +391,85 @@ class AlphabetGame(tk.Toplevel):
         random = randrange(NUMBER_OF_COLORS)
         return COLORS[random]
 
-    def change_letters_colors(self):
+    def change_colors(self):
         self.canvas.itemconfigure(
-            self.top_letter_id,
-            text=chr(self.change_ord()),
-            fill=self.gen_random_color(),
+            self.top_letter_id, fill=self.gen_random_color(),
         )
         self.canvas.itemconfigure(
-            self.bottom_letter_id,
-            text=self.get_next_bottom_letter(),
-            fill=self.gen_random_color(),
+            self.bottom_letter_id, fill=self.gen_random_color(),
         )
-        self.after(self.pause, lambda: self.change_letters_colors())
+        self.after(self.pause, lambda: self.change_colors())
 
     def gen_random_coords(self):
         rand_x = randrange(100, 700)
         rand_y = randrange(100, 400)
         return rand_x, rand_y
 
-    def change_letters_pos(self, changed_sizes=False):
-        self.default_change_letters()
+    def change_pos(self):
         rand_x, rand_y = self.gen_random_coords()
         self.canvas.coords(self.top_letter_id, (rand_x, rand_y))
-        if changed_sizes:
-            self.canvas.move(
-                self.bottom_letter_id, rand_x, 0)
-        else:
-            self.canvas.coords(
-                self.bottom_letter_id,
-                (rand_x, rand_y + DEFAULT_SIZE + DEFAULT_SIZE * 0.5))
+        current_size = int(self.canvas.itemconfig(
+            self.bottom_letter_id)['font'][-1].split()[1])
+        self.canvas.coords(
+            self.bottom_letter_id,
+            (rand_x, rand_y + current_size * 1.5))
+        self.after(self.pause, lambda: self.change_pos())
 
-        self.after(
-            self.pause,
-            lambda: self.change_letters_pos(changed_sizes=changed_sizes))
+    def change_letter_pos(self):
+        self.change_letters()
+        self.change_pos()
 
-    def change_letter_size_order(self, prev_size):
-        self.change_sizes(prev_size)
+    def change_letter_size_order(self):
         self.change_random_letters()
+        self.change_sizes()
 
     def change_letter_order_pos(self):
         self.change_random_letters()
-        self.change_letters_pos()
+        self.change_pos()
+
+    def change_letters_colors(self):
+        self.change_letters()
+        self.change_colors()
 
     def change_letter_order_color(self):
         self.change_random_letters()
-        self.change_letters_colors()
+        self.change_colors()
 
     def change_letter_order_color_pos(self):
         self.change_random_letters()
-        self.change_letters_colors()
-        self.change_letters_pos()
+        self.change_colors()
+        self.change_pos()
 
-    def change_letter_size_pos(self, prev_size):
-        self.change_sizes(prev_size)
-        self.change_letters_pos(changed_sizes=True)
-
-    def change_letters_and_sizes(self, prev_size):
+    def change_letter_size(self):
         self.change_letters()
-        random_size = self.change_sizes(prev_size)
-        self.after(
-            self.pause,
-            lambda: self.change_letters_and_sizes(random_size),
-        )
+        self.change_sizes()
 
-    def change_letter_size_color(self, prev_size):
-        self.change_letters_and_sizes(prev_size)
-        self.change_letters_colors()
+    def change_letter_size_color(self):
+        self.change_letters()
+        self.change_sizes()
+        self.change_colors()
 
-    def change_letter_size_pos_color(self, prev_size):
-        self.change_letters_and_sizes(prev_size)
-        self.change_letters_pos()
-        self.change_letters_colors()
+    def change_letter_size_pos(self):
+        self.change_letters()
+        self.change_sizes()
+        self.change_pos()
 
-    def change_letter_size_pos_order(self, prev_size):
-        self.change_sizes(prev_size)
-        self.change_letters_pos()
+    def change_letter_size_pos_color(self):
+        self.change_letters()
+        self.change_sizes()
+        self.change_pos()
+        self.change_colors()
+
+    def change_letter_size_pos_order(self):
         self.change_random_letters()
+        self.change_sizes()
+        self.change_pos()
 
-    def change_all(self, prev_size):
-        self.change_sizes(prev_size)
-        self.change_letters_pos()
+    def change_all(self):
         self.change_random_letters()
-        self.change_letters_colors()
+        self.change_sizes()
+        self.change_pos()
+        self.change_colors()
 
     def close_and_back_to_settings(self):
         """Функция для закрытия окна игры и возврата к настройкам"""
