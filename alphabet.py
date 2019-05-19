@@ -294,7 +294,6 @@ class AlphabetGame(tk.Toplevel):
                 self.pause,
                 lambda: self.change_letter_size_pos_order())
         else:
-            print('here')
             self.init_random_size_letters(
                 initial_letter_top, initial_letter_bottom)
             self.canvas.after(
