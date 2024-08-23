@@ -47,7 +47,9 @@ class AlphabetSettings:
         # стринговая переменная язык
         language = tk.StringVar()
         # select - элемент для выбора языка
-        language_box = ttk.Combobox(lang_setting_frame, textvariable=language)
+        language_box = ttk.Combobox(
+            lang_setting_frame, textvariable=language, state="readonly"
+        )
         language_box["values"] = (RUSSIAN, ENGLISH)
         language_box.current(0)
         language_box.grid(column=1, row=0)
@@ -106,7 +108,7 @@ class AlphabetSettings:
         label.grid(column=0, row=5, sticky=tk.E)
 
         pause = tk.StringVar()
-        pause_box = ttk.Combobox(pause_frame, textvariable=pause)
+        pause_box = ttk.Combobox(pause_frame, textvariable=pause, state="readonly")
         pause_box["values"] = (
             0.5,
             0.6,
