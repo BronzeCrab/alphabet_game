@@ -12,6 +12,8 @@ LETTERS_BOTTOM_ENG = ('R', 'L', 'B')
 COLORS = ("#563093", "#911414", "#cec379", "#B76EFF", "#FF90FF",
           "#9CFF9C", "#FFB76E", "#A3A375", "#9F9FFF", "#FF66CC")
 NUMBER_OF_COLORS = len(COLORS)
+RUSSIAN = "russian"
+ENGLISH = "english"
 
 
 class AlphabetSettings():
@@ -19,7 +21,7 @@ class AlphabetSettings():
     def __init__(self, parent):
         # заголовок окна
         self.root = parent
-        self.root.title("Алфавит. Настройки")
+        self.root.title("Alphabet. Settings")
         # главный фрейм, задаем отступы
         main_frame = tk.Frame(parent)
         main_frame.grid(padx=50, pady=10)
@@ -27,14 +29,14 @@ class AlphabetSettings():
         lang_setting_frame = tk.Frame(main_frame)
         lang_setting_frame.grid(pady=1)
         # тест настройки языка
-        label = tk.Label(lang_setting_frame, text='Язык алфавита')
+        label = tk.Label(lang_setting_frame, text='Language of alphabet')
         label.grid(column=0, row=0, sticky=tk.E)
         # стринговая переменная язык
         language = tk.StringVar()
         # select - элемент для выбора языка
         language_box = ttk.Combobox(
             lang_setting_frame, textvariable=language)
-        language_box['values'] = ('русский', 'английский')
+        language_box['values'] = (RUSSIAN, ENGLISH)
         language_box.current(0)
         language_box.grid(column=1, row=0)
 
@@ -45,7 +47,7 @@ class AlphabetSettings():
         random_order = tk.IntVar()
         random_order_btn = tk.Checkbutton(
             settings_frame,
-            text='Отображать буквы в случайном порядке',
+            text='Show letters in random order',
             variable=random_order,
             onvalue=1,
             offvalue=0)
@@ -55,7 +57,7 @@ class AlphabetSettings():
         change_pos = tk.IntVar()
         change_pos_btn = tk.Checkbutton(
             settings_frame,
-            text='Менять расположение на экране',
+            text='Change screen position',
             variable=change_pos,
             onvalue=1, offvalue=0)
         change_pos_btn.grid(column=0, row=2, sticky=tk.W)
@@ -63,7 +65,7 @@ class AlphabetSettings():
         # менять ли размер шрифта
         change_font_size = tk.IntVar()
         change_font_size_btn = tk.Checkbutton(
-            settings_frame, text='Менять размер шрифта',
+            settings_frame, text='Change font size',
             variable=change_font_size,
             onvalue=1, offvalue=0)
         change_font_size_btn.grid(column=0, row=3, sticky=tk.W)
@@ -71,7 +73,7 @@ class AlphabetSettings():
         # менять ли цвет
         change_color = tk.IntVar()
         change_color_btn = tk.Checkbutton(
-            settings_frame, text='Менять цвет',
+            settings_frame, text='Change color',
             variable=change_color,
             onvalue=1, offvalue=0)
         change_color_btn.grid(column=0, row=4, sticky=tk.W)
@@ -79,7 +81,7 @@ class AlphabetSettings():
         pause_frame = tk.Frame(main_frame)
         pause_frame.grid(pady=10)
 
-        label = ttk.Label(pause_frame, text='Пауза между показами')
+        label = ttk.Label(pause_frame, text='Pause between shows')
         label.grid(column=0, row=5, sticky=tk.E)
 
         pause = tk.StringVar()
@@ -96,7 +98,7 @@ class AlphabetSettings():
         # переводим в миллисекунды
         btn = ttk.Button(
             game_btn_frame,
-            text="Играть",
+            text="Play",
             command=lambda: self.open_frame(
                 language.get(),
                 random_order.get(),
@@ -145,7 +147,7 @@ class AlphabetGame(tk.Toplevel):
 
         # задаем расположение, навзание, цвет
         self.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        self.title("Алфавит")
+        self.title("Alphabet")
         self.configure(background='white')
 
         self.canvas = tk.Canvas(self)
@@ -153,13 +155,13 @@ class AlphabetGame(tk.Toplevel):
         self.canvas.configure(background='white', width=800, height=600)
 
         btn = ttk.Button(
-            self, text="Назад", command=self.close_and_back_to_settings)
+            self, text="Back", command=self.close_and_back_to_settings)
         btn.grid()
 
         # случайный инт от 0 до 2 для выбора нижней буквы
         random_int = randrange(3)
         # задаем начальные буквы (верхнюю и нижнюю)
-        if lang == 'русский':
+        if lang == RUSSIAN:
             initial_letter_top = chr(randrange(1040, 1072))
             initial_letter_bottom = LETTERS_BOTTOM_RUS[random_int]
         else:
@@ -305,7 +307,7 @@ class AlphabetGame(tk.Toplevel):
             400, 200, anchor=tk.W, font=(
                 FONT[0], DEFAULT_SIZE), text=initial_letter_top)
         self.bottom_letter_id = self.canvas.create_text(
-            400, 200 + DEFAULT_SIZE * 1.5, anchor=tk.W, font=(
+            400, 200 + DEFAULT_SIZE * 2, anchor=tk.W, font=(
                 FONT[0], DEFAULT_SIZE), text=initial_letter_bottom)
 
     def init_random_size_letters(self,
@@ -315,7 +317,7 @@ class AlphabetGame(tk.Toplevel):
             400, 200, anchor=tk.W, font=(
                 FONT[0], random_size), text=initial_letter_top)
         self.bottom_letter_id = self.canvas.create_text(
-            400, 200 + random_size * 1.5,
+            400, 200 + random_size * 2,
             anchor=tk.W,
             font=(FONT[0], random_size),
             text=initial_letter_bottom)
@@ -323,7 +325,7 @@ class AlphabetGame(tk.Toplevel):
     def change_ord(self):
         cur_letter_ord = ord(
             self.canvas.itemcget(self.top_letter_id, "text"))
-        if self.lang == "русский":
+        if self.lang == RUSSIAN:
             # буква Я, начинаем сначала
             if cur_letter_ord == 1071:
                 cur_letter_ord = 1039
@@ -341,7 +343,7 @@ class AlphabetGame(tk.Toplevel):
 
     def get_next_bottom_letter(self):
         random = randrange(3)
-        if self.lang == 'русский':
+        if self.lang == RUSSIAN:
             next_bottom_letter = LETTERS_BOTTOM_RUS[random]
         else:
             next_bottom_letter = LETTERS_BOTTOM_ENG[random]
@@ -368,19 +370,19 @@ class AlphabetGame(tk.Toplevel):
         self.canvas.itemconfigure(
             self.bottom_letter_id, font=(FONT[0], random_size))
         self.canvas.move(
-            self.bottom_letter_id, 0, 1.5 * (random_size - current_size))
+            self.bottom_letter_id, 0, 2 * (random_size - current_size))
         self.after(self.pause, lambda: self.change_sizes())
 
-    def gen_random_ord(self):
+    def gen_random_ord_for_top_letter(self):
         """return random rus ord А-Я or eng"""
-        if self.lang == 'русский':
+        if self.lang == RUSSIAN:
             random = randrange(1040, 1072)
         else:
             random = randrange(65, 91)
         return random
 
     def change_random_letters(self):
-        next_ord = self.gen_random_ord()
+        next_ord = self.gen_random_ord_for_top_letter()
         self.canvas.itemconfigure(self.top_letter_id, text=chr(next_ord))
         self.canvas.itemconfigure(
             self.bottom_letter_id, text=self.get_next_bottom_letter())
@@ -411,7 +413,7 @@ class AlphabetGame(tk.Toplevel):
             self.bottom_letter_id)['font'][-1].split()[1])
         self.canvas.coords(
             self.bottom_letter_id,
-            (rand_x, rand_y + current_size * 1.5))
+            (rand_x, rand_y + current_size * 2))
         self.after(self.pause, lambda: self.change_pos())
 
     def change_letter_pos(self):
