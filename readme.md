@@ -1,11 +1,11 @@
-Игра "Алфавит", использует python3, tkinter.
+Game "Alhpabet", uses python3, tkinter.
 
-## Описание игры:
+## Description of this game:
 
-Для того чтобы играть в Алфавит, игру (монитор или экран для проектора) нужно разместить на уровне глаз, так, чтобы хорошо видеть все буквы и не наклонять при этом голову.
+In order to play the Alphabet, the game (monitor or projector screen) must be placed at eye level, so that you can see all the letters well and not tilt your head at the same time.
 
-Выберите наиболее удобную для вас скорость Алфавита. Начинайте с 2 секунд. Ваша задача — произносить верхнюю букву а на нижнюю букву реагировать поднятием руки (П — Правой, Л — Левой, В или О — Вместе Обе руки). Очень высоко поднимать руки нет необходимости – поднимайте их настолько, насколько это вам комфортно, но так, чтобы рука участвовала не меньше, чем от локтя. Произносить буквы нужно обязательно вслух. Избегайте ненужных напряжений — старайтесь оставаться расслабленными и напрягайте только те мышцы, которые нужны для движений. 
+Choose the Alphabet speed that is most convenient for you. Start with 2 seconds. Your task is to pronounce the upper letter and react to the lower letter by raising your hand (P — Right, L — Left, B or O — Both hands together). There is no need to raise your arms very high – raise them as much as you feel comfortable, but so that the arm participates no less than from the elbow. It is necessary to pronounce the letters out loud. Avoid unnecessary tension — try to stay relaxed and strain only those muscles that are needed for movement.
 
-## Как запустить:
+## How to run it:
 
 ```python3 alphabet.py```
