@@ -199,7 +199,7 @@ class AlphabetGame(tk.Toplevel):
 
         self.canvas = tk.Canvas(self)
         self.canvas.grid()
-        self.canvas.configure(background="white", width=WIDTH, height=HEIGHT)
+        self.canvas.configure(background="white", width=WIDTH, height=HEIGHT - 100)
 
         btn = ttk.Button(self, text="Back", command=self.close_and_back_to_settings)
         btn.grid()
@@ -599,6 +599,6 @@ class AlphabetGame(tk.Toplevel):
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.geometry("500x250")
+    root.geometry(f"{WIDTH}x{HEIGHT}")
     app = AlphabetSettings(root)
     root.mainloop()
